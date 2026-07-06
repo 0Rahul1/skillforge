@@ -1,0 +1,41 @@
+{
+  "name": "skillforge-client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "axios": "^1.7.7",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.11.0",
+    "lucide-react": "^0.454.0",
+    "react": "^18.3.1",
+    "react-countup": "^6.5.3",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.80.0",
+    "react-hot-toast": "^2.6.0",
+    "react-intersection-observer": "^10.0.3",
+    "react-markdown": "^9.0.1",
+    "react-router-dom": "^7.18.1",
+    "react-scroll-parallax": "^3.5.0",
+    "react-syntax-highlighter": "^15.6.1",
+    "react-webcam": "^7.2.0",
+    "recharts": "^3.9.1",
+    "remark-gfm": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "react-is": "^19.2.7",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.10"
+  }
+}

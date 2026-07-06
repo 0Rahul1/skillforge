@@ -1,0 +1,10 @@
+import express from 'express';
+import { updateProfile, getHistory, getLeaderboard, getUserStats } from '../controllers/userController.js';
+import { protect } from '../middleware/authMiddleware.js';
+const router = express.Router();
+router.use(protect);
+router.put('/profile', updateProfile);
+router.get('/history', getHistory);
+router.get('/leaderboard', getLeaderboard);
+router.get('/stats', getUserStats);
+export default router;

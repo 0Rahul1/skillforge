@@ -1,0 +1,12 @@
+import express from 'express';
+import { getDomains, startAssessment, saveAnswers, submitAssessment, getResult, logProctoringEvent } from '../controllers/assessmentController.js';
+import { protect } from '../middleware/authMiddleware.js';
+const router = express.Router();
+router.use(protect);
+router.get('/domains', getDomains);
+router.post('/start', startAssessment);
+router.put('/:id/save', saveAnswers);
+router.post('/:id/submit', submitAssessment);
+router.post('/:id/proctor-event', logProctoringEvent);
+router.get('/results/:id', getResult);
+export default router;

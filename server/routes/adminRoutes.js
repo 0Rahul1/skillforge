@@ -1,0 +1,16 @@
+import express from 'express';
+import { getAdminStats, getAllUsers, getAllQuestions, createQuestion, updateQuestion, deleteQuestion, bulkUploadQuestions, getAllResults, createDomain, deleteUser } from '../controllers/adminController.js';
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
+const router = express.Router();
+router.use(protect, adminOnly);
+router.get('/stats', getAdminStats);
+router.get('/users', getAllUsers);
+router.delete('/users/:id', deleteUser);
+router.get('/questions', getAllQuestions);
+router.post('/questions', createQuestion);
+router.post('/questions/bulk', bulkUploadQuestions);
+router.put('/questions/:id', updateQuestion);
+router.delete('/questions/:id', deleteQuestion);
+router.get('/results', getAllResults);
+router.post('/domains', createDomain);
+export default router;
