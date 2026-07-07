@@ -26,7 +26,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await api.get('/users/me');
+        const response = await api.get('/auth/me');
         if (response.data?.success) {
           const u = response.data.user;
           setDbUser(u);
