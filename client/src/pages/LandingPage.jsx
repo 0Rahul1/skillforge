@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Zap, Brain, Map, Rocket, Newspaper, Trophy, BookOpen, Code, ArrowRight, Star, Users, CheckCircle } from 'lucide-react';
+import { Zap, Brain, Map, Rocket, Newspaper, Trophy, BookOpen, Code, ArrowRight, Star, Users, CheckCircle, ChevronRight } from 'lucide-react';
 import Navbar from '../components/layout/Navbar.jsx';
 import Footer from '../components/layout/Footer.jsx';
 
