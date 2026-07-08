@@ -58,7 +58,7 @@ const resultSchema = new mongoose.Schema({
   // Insights
   strengths: [{ type: String }],
   weaknesses: [{ type: String }],
-  recommendations: [{ title: String, url: String, type: String }],
+  recommendations: { type: Array, default: [] },
   skillRating: { type: String, enum: ['Novice', 'Beginner', 'Intermediate', 'Advanced', 'Expert'], default: 'Beginner' },
 
   // Badge earned
