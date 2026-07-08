@@ -47,13 +47,15 @@ const InteractiveBackground = () => {
     const ctx = canvas.getContext('2d');
     let animationFrameId;
 
-    let width = (canvas.width = canvas.parentElement.offsetWidth);
-    let height = (canvas.height = canvas.parentElement.offsetHeight);
+    const parent = canvas.parentElement || document.body;
+    let width = (canvas.width = parent.offsetWidth || window.innerWidth);
+    let height = (canvas.height = parent.offsetHeight || window.innerHeight);
 
     const handleResize = () => {
-      if (canvas && canvas.parentElement) {
-        width = canvas.width = canvas.parentElement.offsetWidth;
-        height = canvas.height = canvas.parentElement.offsetHeight;
+      if (canvas) {
+        const p = canvas.parentElement || document.body;
+        width = canvas.width = p.offsetWidth || window.innerWidth;
+        height = canvas.height = p.offsetHeight || window.innerHeight;
       }
     };
 
@@ -104,7 +106,6 @@ const InteractiveBackground = () => {
       mouse.y = null;
     };
 
-    const parent = canvas.parentElement;
     parent.addEventListener('mousemove', handleMouseMove);
     parent.addEventListener('mouseleave', handleMouseLeave);
 

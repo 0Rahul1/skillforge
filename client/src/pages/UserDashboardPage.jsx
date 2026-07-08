@@ -181,7 +181,7 @@ export default function UserDashboardPage() {
   const questionsCount = history.reduce((sum, item) => sum + (item.attempted || 0), 0);
   const correctCount = history.reduce((sum, item) => sum + (item.correctAnswers || 0), 0);
   const currentAccuracy = questionsCount > 0 ? Math.round((correctCount / questionsCount) * 100) : 0;
-  const bestScoreVal = stats.bestScore || 0;
+  const bestScoreVal = stats?.bestScore || 0;
 
   // Badge list config
   const badges = [
@@ -358,11 +358,11 @@ export default function UserDashboardPage() {
                   {/* Overview statistics grid */}
                   <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
                     {[
-                      { label: 'Total assessments', value: stats.totalAssessments, icon: FileText, color: 'from-indigo-500/10 to-indigo-500/5 text-indigo-400 border-indigo-500/10' },
-                      { label: 'Average Score', value: `${stats.avgScore}%`, icon: Target, color: 'from-purple-500/10 to-purple-500/5 text-purple-400 border-purple-500/10' },
+                      { label: 'Total assessments', value: stats?.totalAssessments || 0, icon: FileText, color: 'from-indigo-500/10 to-indigo-500/5 text-indigo-400 border-indigo-500/10' },
+                      { label: 'Average Score', value: `${stats?.avgScore || 0}%`, icon: Target, color: 'from-purple-500/10 to-purple-500/5 text-purple-400 border-purple-500/10' },
                       { label: 'Best Score', value: `${bestScoreVal}%`, icon: Award, color: 'from-pink-500/10 to-pink-500/5 text-pink-400 border-pink-500/10' },
                       { label: 'Streak Score', value: '1 Day', icon: BookOpen, color: 'from-orange-500/10 to-orange-500/5 text-orange-400 border-orange-500/10' },
-                      { label: 'Global Rank', value: stats.rank ? `#${stats.rank}` : 'N/A', icon: Trophy, color: 'from-yellow-500/10 to-yellow-500/5 text-yellow-400 border-yellow-500/10' },
+                      { label: 'Global Rank', value: stats?.rank ? `#${stats.rank}` : 'N/A', icon: Trophy, color: 'from-yellow-500/10 to-yellow-500/5 text-yellow-400 border-yellow-500/10' },
                     ].map((stat, idx) => {
                       const Icon = stat.icon;
                       return (
