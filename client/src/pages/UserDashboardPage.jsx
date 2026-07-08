@@ -128,6 +128,25 @@ export default function UserDashboardPage() {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
+  // Sync profile form state once user auth loads in background
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        fullName: user.fullName || '',
+        phone: user.profile?.phone || user.phone || '',
+        location: user.profile?.location || user.location || '',
+        college: user.college || '',
+        degree: user.degree || '',
+        branch: user.branch || '',
+        graduationYear: user.graduationYear || '',
+        github: user.github || '',
+        linkedin: user.linkedin || '',
+        portfolio: user.portfolio || '',
+        skills: user.skills || []
+      });
+    }
+  }, [user]);
+
   // Handle profile form update submit
   const handleUpdateProfileSubmit = async (e) => {
     e.preventDefault();
@@ -178,13 +197,13 @@ export default function UserDashboardPage() {
   // Chart Data preparation
   const weeklyAnalyticsData = history.slice(0, 7).reverse().map((item, idx) => ({
     name: `Test ${idx + 1}`,
-    score: item.percentage,
-    accuracy: Math.round((item.correctAnswers / (item.attempted || 1)) * 100)
+    score: item.percentage || 0,
+    accuracy: item.attempted > 0 ? Math.round(((item.correctAnswers || 0) / item.attempted) * 100) : 0
   }));
 
   const domainScoresData = domains.map(dom => {
     const matchingAssessments = history.filter(h => h.domainName === dom.name);
-    const topScore = matchingAssessments.length > 0 ? Math.max(...matchingAssessments.map(m => m.percentage)) : 0;
+    const topScore = matchingAssessments.length > 0 ? Math.max(...matchingAssessments.map(m => m.percentage || 0)) : 0;
     return { name: dom.name, score: topScore };
   }).filter(d => d.score > 0);
 
