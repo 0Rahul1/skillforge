@@ -1,8 +1,202 @@
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Zap, Brain, Map, Rocket, Newspaper, Trophy, BookOpen, Code, ArrowRight, Star, Users, CheckCircle, ChevronRight } from 'lucide-react';
 import Navbar from '../components/layout/Navbar.jsx';
 import Footer from '../components/layout/Footer.jsx';
+
+// Animated counter component from 0 to target value
+const AnimatedCounter = ({ value, duration = 1500 }) => {
+  const [count, setCount] = useState(0);
+  const target = parseInt(value.replace(/[^0-9]/g, ''), 10);
+  const suffix = value.replace(/[0-9]/g, ''); // "+", "K+", etc.
+
+  useEffect(() => {
+    let start = 0;
+    const end = target;
+    if (start === end) return;
+
+    const totalMiliseconds = duration;
+    const incrementTime = Math.max(Math.floor(totalMiliseconds / end), 15);
+    
+    const timer = setInterval(() => {
+      start += Math.ceil(end / (totalMiliseconds / incrementTime));
+      if (start >= end) {
+        clearInterval(timer);
+        setCount(end);
+      } else {
+        setCount(start);
+      }
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [target, duration]);
+
+  const formattedCount = count.toLocaleString('en-US');
+  return <span>{formattedCount}{suffix}</span>;
+};
+
+// Interactive node connection system linked to cursor
+const InteractiveBackground = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    let width = (canvas.width = canvas.parentElement.offsetWidth);
+    let height = (canvas.height = canvas.parentElement.offsetHeight);
+
+    const handleResize = () => {
+      if (canvas && canvas.parentElement) {
+        width = canvas.width = canvas.parentElement.offsetWidth;
+        height = canvas.height = canvas.parentElement.offsetHeight;
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    const particles = [];
+    const particleCount = 65;
+    const connectionDistance = 110;
+    const mouse = { x: null, y: null, radius: 170 };
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.radius = Math.random() * 2 + 0.8;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > width) this.vx = -this.vx;
+        if (this.y < 0 || this.y > height) this.vy = -this.vy;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.25)';
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    };
+
+    const handleMouseLeave = () => {
+      mouse.x = null;
+      mouse.y = null;
+    };
+
+    const parent = canvas.parentElement;
+    parent.addEventListener('mousemove', handleMouseMove);
+    parent.addEventListener('mouseleave', handleMouseLeave);
+
+    const drawGridLines = () => {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.015)';
+      ctx.lineWidth = 0.5;
+      const gridSize = 70;
+      for (let x = 0; x < width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      drawGridLines();
+
+      particles.forEach((p) => {
+        p.update();
+        p.draw();
+      });
+
+      for (let i = 0; i < particles.length; i++) {
+        const p1 = particles[i];
+
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = p1.x - mouse.x;
+          const dy = p1.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < mouse.radius) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            const alpha = (1 - dist / mouse.radius) * 0.22;
+            ctx.strokeStyle = `rgba(139, 92, 246, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+
+            p1.x -= dx * 0.015;
+            p1.y -= dy * 0.015;
+          }
+        }
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < connectionDistance) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            const alpha = (1 - dist / connectionDistance) * 0.06;
+            ctx.strokeStyle = `rgba(99, 102, 241, ${alpha})`;
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      parent.removeEventListener('mousemove', handleMouseMove);
+      parent.removeEventListener('mouseleave', handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none -z-20"
+      style={{ mixBlendMode: 'screen' }}
+    />
+  );
+};
 
 const STATS = [
   { value: '18+', label: 'Learning Domains', icon: Brain },
@@ -85,8 +279,12 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#06060c] text-white overflow-x-hidden">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-24 md:pt-40 md:pb-36 flex flex-col items-center px-4 max-w-7xl mx-auto text-center z-10">
+      {/* Hero Wrapper */}
+      <div className="w-full relative overflow-hidden border-b border-white/5">
+        <InteractiveBackground />
+
+        {/* Hero Section */}
+        <section className="relative pt-32 pb-24 md:pt-40 md:pb-36 flex flex-col items-center px-4 max-w-7xl mx-auto text-center z-10">
         {/* Animated Background Glows */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent blur-[120px] rounded-full -z-10 animate-pulse" />
         <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-cyan-500/10 blur-[90px] rounded-full -z-10" />
@@ -164,7 +362,9 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4">
                   <Icon className="w-5 h-5" />
                 </div>
-                <span className="text-3xl font-extrabold text-white mb-2">{stat.value}</span>
+                <span className="text-3xl font-extrabold text-white mb-2">
+                  <AnimatedCounter value={stat.value} />
+                </span>
                 <span className="text-slate-400 text-xs font-medium tracking-wide uppercase">
                   {stat.label}
                 </span>
@@ -173,6 +373,7 @@ export default function LandingPage() {
           })}
         </motion.div>
       </section>
+      </div>
 
       {/* Features Grid */}
       <section className="py-24 px-4 bg-slate-950/40 border-y border-white/5">
